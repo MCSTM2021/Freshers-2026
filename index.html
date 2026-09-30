@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Freshers' Party – Ramp Walk Evaluation</title>
+<style>
+  *{box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif}
+  body{margin:0;background:#f4eef8;color:#222}
+  header{background:#6a1b9a;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+  header h1{font-size:18px;margin:0} .who{font-size:14px}
+  .card{background:#fff;max-width:1100px;margin:20px auto;padding:20px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  label{display:block;font-weight:600;margin:12px 0 4px}
+  input,select{width:100%;padding:9px;border:1px solid #bbb;border-radius:4px;font-size:15px}
+  .btn{background:#6a1b9a;color:#fff;border:0;padding:10px 20px;border-radius:4px;margin-top:14px;cursor:pointer;font-size:15px}
+  .btn.light{background:#6c757d} .msg{margin-top:10px;font-weight:600} .ok{color:#1a7f37} .err{color:#c62828}
+  .hidden{display:none!important}
+  .toolbar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;max-width:1100px;margin:16px auto 0;padding:0 8px}
+  .toolbar input{width:140px} .prog{font-weight:700;color:#6a1b9a}
+  .closed{max-width:1100px;margin:10px auto;background:#ffebee;color:#c62828;padding:10px 14px;border-radius:6px;font-weight:600}
+  .jrow{display:flex;gap:16px;align-items:center;background:#fff;max-width:1100px;margin:10px auto;padding:12px 14px;border-radius:8px;border-left:6px solid #ccc;box-shadow:0 1px 4px rgba(0,0,0,.06);flex-wrap:wrap}
+  .jrow.done{border-left-color:#2e7d32} .jrow.part{border-left-color:#f9a825} .jrow.errr{border-left-color:#c62828}
+  .chest{font-size:28px;font-weight:800;color:#6a1b9a;min-width:70px;text-align:center;line-height:1}
+  .chest small{display:block;font-size:10px;font-weight:700;color:#888;margin-bottom:4px}
+  .gender{display:flex;flex-direction:column;gap:6px}
+  .gbtn{border:2px solid #bbb;background:#fff;padding:7px 16px;border-radius:20px;cursor:pointer;font-weight:700;min-width:76px;font-size:14px}
+  .gbtn.sel[data-g=Boy]{background:#1565c0;border-color:#1565c0;color:#fff}
+  .gbtn.sel[data-g=Girl]{background:#c2185b;border-color:#c2185b;color:#fff}
+  .crits{flex:1;display:flex;flex-direction:column;gap:6px;min-width:300px}
+  .crit{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .cname{width:180px;font-size:13px;font-weight:600}
+  .scale{display:flex;gap:3px;flex-wrap:wrap}
+  .sbtn{width:32px;height:32px;border:1px solid #bbb;background:#fff;border-radius:4px;cursor:pointer;font-size:13px;padding:0}
+  .sbtn.sel{background:#6a1b9a;color:#fff;border-color:#6a1b9a;font-weight:700}
+  .status{min-width:100px;text-align:right;font-size:13px;color:#555} .status b{display:block;font-size:18px;color:#222}
+  table{width:100%;border-collapse:collapse;margin-top:8px} th,td{border:1px solid #999;padding:6px 8px;font-size:13px;text-align:center}
+  th{background:#6a1b9a;color:#fff} tr.tie td{background:#fff3cd}
+  .rep-head{text-align:center} .rep-head h2{margin:0;color:#6a1b9a} .rep-head h3{margin:6px 0}
+  .warn{background:#fff3cd;border:1px solid #f0c36d;padding:8px 12px;border-radius:4px;margin-top:10px;font-size:14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:14px} @media(max-width:800px){.grid2{grid-template-columns:1fr}}
+  .sec h3{margin:0 0 4px} .sec.girls h3{color:#c2185b} .sec.boys h3{color:#1565c0}
+  @media print{header,.no-print{display:none!important} body{background:#fff} .card{box-shadow:none;margin:0;max-width:100%}
+    th,tr.tie td{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<header><h1>Freshers' Party – Ramp Walk Evaluation</h1>
+  <div class="who hidden" id="who"><span id="whoName"></span> &nbsp;<button class="btn light" style="margin:0;padding:6px 12px" onclick="logout()">Logout</button></div></header>
+
+<!-- LOGIN -->
+<div class="card" id="loginCard" style="max-width:400px">
+  <h2>Login</h2>
+  <label>User Name</label><select id="lu"><option value="">Loading users…</option></select>
+  <label>Password</label><input id="lp" type="password" onkeydown="if(event.key==='Enter')login()">
+  <button class="btn" onclick="login()">Login</button><div class="msg" id="lmsg"></div>
+</div>
+
+<!-- JURY -->
+<div id="juryView" class="hidden">
+  <div class="toolbar">
+    <span class="prog" id="prog"></span>
+    <span>Go to Chest No: <input type="number" id="jump" min="1" onkeydown="if(event.key==='Enter')jumpTo()"></span>
+    <span class="msg" id="jmsg" style="margin:0"></span>
+  </div>
+  <div class="closed hidden" id="closedNote">Scoring is closed. Marks can no longer be changed.</div>
+  <div id="rows"></div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminView" class="hidden">
+  <div class="card">
+    <div class="no-print" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <button class="btn" style="margin:0" onclick="loadResults()">Refresh Results</button>
+      <button class="btn light" style="margin:0" onclick="window.print()">Print / Save PDF</button>
+      <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:400"><input type="checkbox" id="full" style="width:auto" onchange="render()"> Show full ranking</label>
+      <label style="display:flex;gap:6px;align-items:center;margin:0;font-weight:400"><input type="checkbox" id="auto" style="width:auto" onchange="autoRefresh()"> Auto-refresh (30 s)</label>
+      <span class="msg" id="amsg" style="margin:0"></span>
+    </div>
+    <div id="resOut"></div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbzeEcNDQ9_m27AQemruDhncO_KV_BHjfvbqz-2z2TpwhRYI76-30_lGf6fBPjOFYXzpwQ/exec';
+
+async function api(p){ const r = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}); return r.json(); }
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function show(el,txt,ok){ el.textContent=txt; el.className='msg '+(ok?'ok':'err'); }
+function token(){ return (JSON.parse(sessionStorage.getItem('ramp')||'{}')).token; }
+function checkExpired(r){ if(!r.ok && /expired/i.test(r.error)){ alert(r.error); logout(); return true; } return false; }
+
+// ---------- LOGIN ----------
+async function loadUsers(){
+  try{ const r = await api({action:'users'}); if(!r.ok) throw new Error(r.error);
+    $('lu').innerHTML = '<option value="">-- Select User --</option>' + r.users.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join('');
+  }catch(e){ $('lu').innerHTML='<option value="">Could not load users</option>'; show($('lmsg'),'Could not load users: '+e.message,false); }
+}
+async function login(){
+  if(!$('lu').value) return show($('lmsg'),'Please select a user name.',false);
+  show($('lmsg'),'Checking…',true);
+  try{ const r = await api({action:'login',username:$('lu').value,password:$('lp').value});
+    if(!r.ok) return show($('lmsg'),r.error,false);
+    sessionStorage.setItem('ramp',JSON.stringify(r)); $('lp').value=''; startApp();
+  }catch(e){ show($('lmsg'),'Connection error: '+e.message,false); }
+}
+async function logout(){ const t=token(); sessionStorage.removeItem('ramp'); try{await api({action:'logout',token:t});}catch(e){} location.reload(); }
+function startApp(){
+  const s = JSON.parse(sessionStorage.getItem('ramp')||'null'); if(!s) return false;
+  $('loginCard').classList.add('hidden'); $('who').classList.remove('hidden');
+  $('whoName').textContent = `${s.user} (${s.role})`;
+  if(s.role==='admin'){ $('adminView').classList.remove('hidden'); loadResults(); }
+  else { $('juryView').classList.remove('hidden'); loadJury(); }
+  return true;
+}
+
+// ---------- JURY ----------
+let CFG=null; const ST={}; const timers={};
+async function loadJury(){
+  show($('jmsg'),'Loading…',true);
+  const r = await api({action:'config',token:token()});
+  if(checkExpired(r)) return; if(!r.ok) return show($('jmsg'),r.error,false);
+  CFG=r; $('jmsg').textContent='';
+  $('closedNote').classList.toggle('hidden', r.open);
+  let html='';
+  for(let c=1;c<=r.chestCount;c++){
+    const m=r.my[c];
+    ST[c]={ gender: m?m.gender:'', marks: r.criteria.map((k,i)=> m && m.marks[i]!=null ? m.marks[i] : null), saved: !!m };
+    html += rowHtml(c);
+  }
+  $('rows').innerHTML=html;
+  for(let c=1;c<=r.chestCount;c++) paint(c, ST[c].saved?'saved':'');
+  updProg();
+}
+function rowHtml(c){
+  const crit = CFG.criteria.map((k,i)=>`<div class="crit"><div class="cname">${esc(k.name)} <span style="font-weight:400;color:#888">(/${k.max})</span></div>
+    <div class="scale">${Array.from({length:k.max+1},(_,v)=>`<button class="sbtn" data-c="${c}" data-i="${i}" data-v="${v}">${v}</button>`).join('')}</div></div>`).join('');
+  return `<div class="jrow" id="r${c}"><div class="chest"><small>CHEST NO</small>${c}</div>
+    <div class="gender"><button class="gbtn" data-c="${c}" data-g="Boy">Boy</button><button class="gbtn" data-c="${c}" data-g="Girl">Girl</button></div>
+    <div class="crits">${crit}</div><div class="status" id="s${c}"></div></div>`;
+}
+function paint(c,state){
+  const s=ST[c], row=$('r'+c);
+  row.querySelectorAll('.gbtn').forEach(b=>b.classList.toggle('sel', b.dataset.g===s.gender));
+  row.querySelectorAll('.sbtn').forEach(b=>b.classList.toggle('sel', s.marks[Number(b.dataset.i)]===Number(b.dataset.v)));
+  const complete = s.gender && s.marks.every(m=>m!==null);
+  const total = s.marks.reduce((a,m)=>a+(m||0),0), max = CFG.criteria.reduce((a,k)=>a+k.max,0);
+  row.classList.remove('done','part','errr');
+  let txt;
+  if(state==='saving') txt='Saving…';
+  else if(state==='saved'){ txt='✓ Saved'; row.classList.add('done'); s.saved=true; }
+  else if(state==='error'){ txt='⚠ Not saved'; row.classList.add('errr'); }
+  else if(complete) txt='Saving soon…';
+  else if(s.gender || s.marks.some(m=>m!==null)){ txt='Incomplete'; row.classList.add('part'); }
+  else txt='Not scored';
+  $('s'+c).innerHTML = `<b>${total}/${max}</b>${txt}`;
+}
+document.addEventListener('click', e=>{
+  const b = e.target.closest('.gbtn,.sbtn'); if(!b || !CFG) return;
+  if(!CFG.open){ alert('Scoring is closed.'); return; }
+  const c=Number(b.dataset.c), s=ST[c];
+  if(b.classList.contains('gbtn')) s.gender=b.dataset.g; else s.marks[Number(b.dataset.i)]=Number(b.dataset.v);
+  s.saved=false; paint(c,''); updProg();
+  if(s.gender && s.marks.every(m=>m!==null)){ clearTimeout(timers[c]); timers[c]=setTimeout(()=>saveRow(c),700); }
+});
+async function saveRow(c){
+  const s=ST[c]; paint(c,'saving');
+  try{
+    const r = await api({action:'save',token:token(),chest:c,gender:s.gender,marks:s.marks});
+    if(checkExpired(r)) return;
+    if(!r.ok){ paint(c,'error'); show($('jmsg'),'Chest '+c+': '+r.error,false); }
+    else paint(c,'saved');
+  }catch(err){ paint(c,'error'); show($('jmsg'),'Chest '+c+': connection error – tap any mark again to retry',false); }
+  updProg();
+}
+function updProg(){ const n=Object.values(ST).filter(s=>s.saved).length; $('prog').textContent=`Saved: ${n} / ${CFG.chestCount}`; }
+function jumpTo(){ const el=$('r'+$('jump').value); if(el){ el.scrollIntoView({behavior:'smooth',block:'center'}); el.style.outline='3px solid #6a1b9a'; setTimeout(()=>el.style.outline='',1500);} }
+
+// ---------- ADMIN ----------
+let RES=null, timer=null;
+async function loadResults(){
+  show($('amsg'),'Loading…',true);
+  const r = await api({action:'results',token:token()});
+  if(checkExpired(r)) return; if(!r.ok) return show($('amsg'),r.error,false);
+  RES=r; $('amsg').textContent='Updated '+new Date().toLocaleTimeString('en-GB'); $('amsg').className='msg ok';
+  render();
+}
+function autoRefresh(){ clearInterval(timer); if($('auto').checked) timer=setInterval(loadResults,30000); }
+function section(label,cls,g){
+  const full=$('full').checked, list = full ? g.all : g.selected;
+  const title = full ? `Full Ranking – ${label}` :
+    (g.clash ? `Top ${g.shown} ${label} <span style="font-size:13px;color:#b26a00">(marks tie in top ${RES.topN} – extended list)</span>` : `Top ${g.shown} ${label}`);
+  if(!list.length) return `<div class="sec ${cls}"><h3>${title}</h3><p>No scores yet.</p></div>`;
+  const rows = list.map(x=>`<tr class="${x.tied?'tie':''}"><td><b>${x.rank}</b></td><td><b>${x.chest}</b></td>
+    ${x.crit.map(v=>`<td>${v}</td>`).join('')}<td><b>${x.total}</b></td><td>${x.jc}/${RES.juryCount}</td></tr>`).join('');
+  return `<div class="sec ${cls}"><h3>${title}</h3><table><tr><th>Rank</th><th>Chest No</th>
+    ${RES.criteria.map(c=>`<th>${esc(c)}</th>`).join('')}<th>Grand Total</th><th>Jury</th></tr>${rows}</table></div>`;
+}
+function render(){
+  if(!RES) return; const r=RES;
+  let warn='';
+  if(r.mismatch.length) warn+=`<div class="warn">⚠ Boy/Girl selection differs between jury members for Chest No: <b>${r.mismatch.join(', ')}</b> – majority selection used.</div>`;
+  if(r.unclear.length) warn+=`<div class="warn">⚠ Boy/Girl could not be decided (equal votes) for Chest No: <b>${r.unclear.join(', ')}</b> – excluded from lists.</div>`;
+  if(r.incomplete.length) warn+=`<div class="warn">⚠ Not yet scored by all ${r.juryCount} jury members: Chest No <b>${r.incomplete.join(', ')}</b></div>`;
+  $('resOut').innerHTML = `<div class="rep-head" style="margin-top:14px"><h2>Manas College of Science Technology and Management</h2>
+    <h3>Freshers' Party – Ramp Walk Results</h3>
+    <div style="font-size:13px">Jury progress: ${r.juryProgress.map(j=>`${esc(j.jury)}: <b>${j.count}/${r.chestCount}</b>`).join(' &nbsp;|&nbsp; ')}</div></div>
+    ${warn}
+    <div class="grid2">${section('Girls','girls',r.girls)}${section('Boys','boys',r.boys)}</div>
+    <p style="font-size:12px;margin-top:10px">Highlighted rows have equal grand totals. Generated on ${new Date().toLocaleString('en-GB')}</p>`;
+}
+
+if(!startApp()) loadUsers();
+</script>
+</body>
+</html>
