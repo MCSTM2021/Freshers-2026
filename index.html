@@ -99,21 +99,30 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbzeEcNDQ9_m27AQemruDhncO_KV_BHjfvbqz-2z2TpwhRYI76-30_lGf6fBPjOFYXzpwQ/exec';
-const NEED_VERSION = 'v4', SKEY = 'fp_v4';
+const NEED_VERSION = 'v5', SKEY = 'fp_v4';
 
-async function api(p, tries){
-  tries = tries || 2;
-  for (let n = 1; n <= tries; n++){
-    const ctl = new AbortController(), t = setTimeout(()=>ctl.abort(), 60000);
-    try{
-      const r = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p),signal:ctl.signal});
-      const txt = await r.text(); clearTimeout(t);
-      try{ return JSON.parse(txt); }catch(e){ return {ok:false,error:'Server did not reply correctly. Check deployment: Execute as Me, Who has access: Anyone.'}; }
-    }catch(e){
-      clearTimeout(t);
-      if (n === tries) return {ok:false,error: e.name==='AbortError' ? 'Server took too long (tried '+tries+' times). Check the internet connection and try again.' : 'Connection error: '+e.message};
-    }
+window.onerror = function(m, s, l){ var el = document.getElementById('lmsg') || document.getElementById('jmsg');
+  if (el){ el.textContent = 'Page error: ' + m + ' (line ' + l + ')'; el.className = 'msg err'; } };
+function timed_(url, opt, ms){
+  return new Promise(function(resolve, reject){
+    var ctl = null; try { ctl = new AbortController(); opt.signal = ctl.signal; } catch(e) {}
+    var t = setTimeout(function(){ if (ctl) ctl.abort(); reject(new Error('timeout')); }, ms);
+    fetch(url, opt).then(function(r){ return r.text(); })
+      .then(function(txt){ clearTimeout(t); resolve(txt); }, function(err){ clearTimeout(t); reject(err); });
+  });
+}
+async function api(p){
+  var body = JSON.stringify(p), last = '';
+  var ways = [
+    function(){ return timed_(API_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:body}, 40000); },
+    function(){ return timed_(API_URL + '?q=' + encodeURIComponent(body) + '&t=' + Date.now(), {method:'GET'}, 40000); }
+  ];
+  for (var i = 0; i < ways.length; i++){
+    try { var txt = await ways[i]();
+      try { return JSON.parse(txt); } catch(e){ last = 'Server did not reply correctly (Deployment must be: Execute as Me, Access: Anyone).'; }
+    } catch(e){ last = e.message === 'timeout' ? 'Server took too long – check the phone’s internet connection.' : 'Connection error: ' + e.message; }
   }
+  return {ok:false, error:last};
 }
 const $ = id => document.getElementById(id);
 const $ = id => document.getElementById(id);
