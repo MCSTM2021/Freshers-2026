@@ -2,43 +2,44 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache">
 <title>Freshers' Party 2026 – Evaluation</title>
 <style>
   *{box-sizing:border-box;font-family:Segoe UI,Arial,sans-serif}
   body{margin:0;background:#f4eef8;color:#222}
-  header{background:#4a148c;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-  header h1{font-size:18px;margin:0} .who{font-size:14px}
-  .card{background:#fff;max-width:1100px;margin:20px auto;padding:20px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+  header{background:#4a148c;color:#fff;padding:10px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10;gap:10px}
+  header h1{font-size:17px;margin:0} .who{font-size:13px;text-align:right}
+  .card{background:#fff;max-width:1100px;margin:16px auto;padding:18px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
   label{display:block;font-weight:600;margin:12px 0 4px}
   input,select{width:100%;padding:9px;border:1px solid #bbb;border-radius:4px;font-size:15px}
   .btn{background:#6a1b9a;color:#fff;border:0;padding:10px 20px;border-radius:4px;margin-top:14px;cursor:pointer;font-size:15px}
   .btn.light{background:#6c757d} .msg{margin-top:10px;font-weight:600} .ok{color:#1a7f37} .err{color:#c62828}
   .hidden{display:none!important}
-  .tiles{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin:40px auto;max-width:900px;padding:0 12px}
-  .tile{flex:1;min-width:260px;max-width:400px;background:#fff;border-radius:12px;padding:30px 20px;text-align:center;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.1);border-top:8px solid #6a1b9a;transition:transform .15s}
-  .tile:hover{transform:translateY(-3px)} .tile.cult{border-top-color:#00695c} .tile .ic{font-size:50px} .tile h2{margin:10px 0 6px} .tile p{margin:0;color:#666}
-  .tile.off{opacity:.4;cursor:not-allowed;transform:none}
-  .backbar{max-width:1100px;margin:14px auto 0;padding:0 8px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  .backbar h2{margin:0;font-size:20px}
-  .toolbar{display:flex;gap:14px;align-items:center;flex-wrap:wrap;max-width:1100px;margin:12px auto 0;padding:0 8px}
-  .toolbar input{width:120px} .prog{font-weight:700}
+  .tiles{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:30px auto;max-width:900px;padding:0 12px}
+  .tile{flex:1;min-width:260px;max-width:400px;background:#fff;border-radius:12px;padding:28px 20px;text-align:center;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.1);border-top:8px solid #6a1b9a}
+  .tile.cult{border-top-color:#00695c} .tile .ic{font-size:50px} .tile h2{margin:10px 0 6px} .tile p{margin:0;color:#666}
+  .tile.off{opacity:.4;cursor:not-allowed}
+  .backbar{max-width:1100px;margin:12px auto 0;padding:0 8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .backbar h2{margin:0;font-size:19px}
+  .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;max-width:1100px;margin:10px auto 0;padding:0 8px}
+  .toolbar input{width:110px} .prog{font-weight:700}
   .closed{max-width:1100px;margin:10px auto;background:#ffebee;color:#c62828;padding:10px 14px;border-radius:6px;font-weight:600}
-  .jrow{display:flex;gap:16px;align-items:center;background:#fff;max-width:1100px;margin:10px auto;padding:12px 14px;border-radius:8px;border-left:6px solid #ccc;box-shadow:0 1px 4px rgba(0,0,0,.06);flex-wrap:wrap}
+  .jrow{display:flex;gap:14px;align-items:center;background:#fff;max-width:1100px;margin:10px auto;padding:12px;border-radius:8px;border-left:6px solid #ccc;box-shadow:0 1px 4px rgba(0,0,0,.06);flex-wrap:wrap}
   .jrow.done{border-left-color:#2e7d32} .jrow.part{border-left-color:#f9a825} .jrow.errr{border-left-color:#c62828}
-  .chest{font-size:28px;font-weight:800;color:#6a1b9a;min-width:70px;text-align:center;line-height:1}
+  .chest{font-size:28px;font-weight:800;color:#6a1b9a;min-width:64px;text-align:center;line-height:1}
   .chest small{display:block;font-size:10px;font-weight:700;color:#888;margin-bottom:4px}
-  .pname{min-width:180px;max-width:240px;font-size:15px} .pname span{color:#666;font-size:12px}
-  .gender{display:flex;flex-direction:column;gap:6px}
-  .gbtn{border:2px solid #bbb;background:#fff;padding:7px 16px;border-radius:20px;cursor:pointer;font-weight:700;min-width:76px;font-size:14px}
+  .pname{min-width:150px;max-width:240px;font-size:15px} .pname span{color:#666;font-size:12px}
+  .gender{display:flex;gap:6px}
+  .gbtn{border:2px solid #bbb;background:#fff;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:700;min-width:70px;font-size:14px}
   .gbtn.sel[data-g=Boy]{background:#1565c0;border-color:#1565c0;color:#fff}
   .gbtn.sel[data-g=Girl]{background:#c2185b;border-color:#c2185b;color:#fff}
-  .crits{flex:1;display:flex;flex-direction:column;gap:6px;min-width:300px}
+  .crits{flex:1;display:flex;flex-direction:column;gap:6px;min-width:280px}
   .crit{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  .cname{width:180px;font-size:13px;font-weight:600}
+  .cname{width:170px;font-size:13px;font-weight:600}
   .scale{display:flex;gap:3px;flex-wrap:wrap}
   .sbtn{width:32px;height:32px;border:1px solid #bbb;background:#fff;border-radius:4px;cursor:pointer;font-size:13px;padding:0}
   .sbtn.sel{background:#6a1b9a;color:#fff;border-color:#6a1b9a;font-weight:700}
-  .status{min-width:100px;text-align:right;font-size:13px;color:#555} .status b{display:block;font-size:18px;color:#222}
+  .status{min-width:90px;text-align:right;font-size:13px;color:#555} .status b{display:block;font-size:18px;color:#222}
   table{width:100%;border-collapse:collapse;margin-top:8px} th,td{border:1px solid #999;padding:6px 8px;font-size:13px;text-align:center}
   th{background:#6a1b9a;color:#fff} tr.tie td{background:#fff3cd}
   .rep-head{text-align:center} .rep-head h2{margin:0;color:#4a148c} .rep-head h3{margin:6px 0}
@@ -47,6 +48,7 @@
   .sec h3{margin:0 0 4px} .sec.girls h3{color:#c2185b} .sec.boys h3{color:#1565c0}
   .ctl{display:flex;gap:12px;align-items:center;flex-wrap:wrap} .ctl label{display:flex;gap:6px;align-items:center;margin:0;font-weight:400}
   .ctl input[type=checkbox]{width:auto}
+  .loading{text-align:center;padding:30px;color:#555;font-weight:600}
   body.m-cult .chest{color:#00695c} body.m-cult .sbtn.sel{background:#00695c;border-color:#00695c}
   body.m-cult th{background:#00695c} body.m-cult .btn:not(.light){background:#00695c}
   @media print{header,.no-print,.backbar{display:none!important} body{background:#fff} .card{box-shadow:none;margin:0;max-width:100%}
@@ -55,35 +57,31 @@
 </head>
 <body>
 <header><h1>Freshers' Party 2026 – Evaluation</h1>
-  <div class="who hidden" id="who"><span id="whoName"></span> &nbsp;<button class="btn light" style="margin:0;padding:6px 12px" onclick="logout()">Logout</button></div></header>
+  <div class="who hidden" id="who"><span id="whoName"></span><br><button class="btn light" style="margin:4px 0 0;padding:5px 12px" onclick="logout()">Logout</button></div></header>
 
-<!-- LOGIN -->
 <div class="card" id="loginCard" style="max-width:400px">
   <h2>Login</h2>
-  <label>User Name</label><select id="lu"><option value="">Loading users…</option></select>
+  <label>User Name</label><select id="lu"><option value="">Loading users… (can take up to 10 s)</option></select>
   <label>Password</label><input id="lp" type="password" onkeydown="if(event.key==='Enter')login()">
   <button class="btn" onclick="login()">Login</button><div class="msg" id="lmsg"></div>
 </div>
 
-<!-- HOME -->
 <div id="home" class="hidden"><div class="tiles">
   <div class="tile cult" id="tCult" onclick="openMod('cult')"><div class="ic">🎭</div><h2>Cultural Programmes</h2><p id="tCultSub"></p></div>
   <div class="tile ramp" id="tRamp" onclick="openMod('ramp')"><div class="ic">👗</div><h2>Ramp Walk</h2><p id="tRampSub"></p></div>
 </div></div>
 
-<!-- JURY -->
 <div id="juryView" class="hidden">
   <div class="backbar"><button class="btn light" style="margin:0" onclick="goHome()">← Back</button><h2 id="jTitle"></h2></div>
   <div class="toolbar">
     <span class="prog" id="prog"></span>
     <span><span id="jumpLbl">Go to:</span> <input type="text" id="jump" onkeydown="if(event.key==='Enter')jumpTo()"></span>
-    <span class="msg" id="jmsg" style="margin:0"></span>
   </div>
+  <div class="toolbar"><span class="msg" id="jmsg" style="margin:0"></span></div>
   <div class="closed hidden" id="closedNote">Scoring is closed. Marks can no longer be changed.</div>
   <div id="rows"></div>
 </div>
 
-<!-- ADMIN -->
 <div id="adminView" class="hidden">
   <div class="backbar"><button class="btn light" style="margin:0" onclick="goHome()">← Back</button><h2 id="aTitle"></h2></div>
   <div class="card">
@@ -101,32 +99,43 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbzeEcNDQ9_m27AQemruDhncO_KV_BHjfvbqz-2z2TpwhRYI76-30_lGf6fBPjOFYXzpwQ/exec';
+const NEED_VERSION = 'v4', SKEY = 'fp_v4';
 
-async function api(p){ const r = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p)}); return r.json(); }
+async function api(p){
+  const ctl = new AbortController(), t = setTimeout(()=>ctl.abort(), 30000);
+  try{
+    const r = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p),signal:ctl.signal});
+    const txt = await r.text();
+    try{ return JSON.parse(txt); }catch(e){ return {ok:false,error:'Server did not reply correctly. Check the Apps Script deployment (Who has access: Anyone).'}; }
+  }catch(e){ return {ok:false,error: e.name==='AbortError' ? 'Server took too long. Please try again.' : 'Connection error: '+e.message}; }
+  finally{ clearTimeout(t); }
+}
 const $ = id => document.getElementById(id);
-const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function show(el,txt,ok){ el.textContent=txt; el.className='msg '+(ok?'ok':'err'); }
-function token(){ return (JSON.parse(sessionStorage.getItem('fp')||'{}')).token; }
-function checkExpired(r){ if(!r.ok && /expired/i.test(r.error)){ alert(r.error); logout(); return true; } return false; }
+function token(){ return (JSON.parse(sessionStorage.getItem(SKEY)||'{}')).token; }
+function checkExpired(r){ if(!r.ok && /expired/i.test(r.error||'')){ alert(r.error); logout(); return true; } return false; }
 
 // ---------- LOGIN / HOME ----------
 let SESS=null, MODE=null;
 async function loadUsers(){
-  try{ const r = await api({action:'users'}); if(!r.ok) throw new Error(r.error);
-    $('lu').innerHTML = '<option value="">-- Select User --</option>' + r.users.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join('');
-  }catch(e){ $('lu').innerHTML='<option value="">Could not load users</option>'; show($('lmsg'),'Could not load users: '+e.message,false); }
+  const r = await api({action:'users'});
+  if(!r.ok){ $('lu').innerHTML='<option value="">Could not load users</option>'; return show($('lmsg'),r.error,false); }
+  if(r.version!==NEED_VERSION) show($('lmsg'),'Server script is an old version – in Apps Script do Deploy → Manage deployments → New version.',false);
+  $('lu').innerHTML = '<option value="">-- Select User --</option>' + r.users.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join('');
 }
 async function login(){
   if(!$('lu').value) return show($('lmsg'),'Please select a user name.',false);
   show($('lmsg'),'Checking…',true);
-  try{ const r = await api({action:'login',username:$('lu').value,password:$('lp').value});
-    if(!r.ok) return show($('lmsg'),r.error,false);
-    sessionStorage.setItem('fp',JSON.stringify(r)); $('lp').value=''; startApp();
-  }catch(e){ show($('lmsg'),'Connection error: '+e.message,false); }
+  const r = await api({action:'login',username:$('lu').value,password:$('lp').value});
+  if(!r.ok) return show($('lmsg'),r.error,false);
+  if(!r.user || !Array.isArray(r.access)) return show($('lmsg'),'Server script is an old version – please deploy a New version.',false);
+  sessionStorage.setItem(SKEY,JSON.stringify(r)); $('lp').value=''; startApp();
 }
-async function logout(){ const t=token(); sessionStorage.removeItem('fp'); try{await api({action:'logout',token:t});}catch(e){} location.reload(); }
+async function logout(){ const t=token(); sessionStorage.clear(); if(t) api({action:'logout',token:t}); location.reload(); }
 function startApp(){
-  SESS = JSON.parse(sessionStorage.getItem('fp')||'null'); if(!SESS) return false;
+  try{ SESS = JSON.parse(sessionStorage.getItem(SKEY)||'null'); }catch(e){ SESS=null; }
+  if(!SESS || !SESS.user || !Array.isArray(SESS.access)){ sessionStorage.clear(); SESS=null; return false; }
   $('loginCard').classList.add('hidden'); $('who').classList.remove('hidden');
   $('whoName').textContent = `${SESS.user} (${SESS.role})`;
   goHome(); return true;
@@ -136,19 +145,19 @@ function goHome(){
   $('juryView').classList.add('hidden'); $('adminView').classList.add('hidden'); $('home').classList.remove('hidden');
   const isAdmin = SESS.role==='admin';
   [['cult','tCult'],['ramp','tRamp']].forEach(([m,id])=>{
-    const ok = (SESS.access||[]).includes(m);
+    const ok = SESS.access.includes(m);
     $(id).classList.toggle('off', !ok);
     $(id+'Sub').textContent = !ok ? 'Not assigned to you' : (isAdmin ? 'View results' : 'Enter marks');
   });
 }
 function openMod(m){
-  if(!(SESS.access||[]).includes(m)) return;
+  if(!SESS.access.includes(m)) return;
   MODE=m; document.body.className='m-'+m; $('home').classList.add('hidden');
   const label = m==='cult' ? 'Cultural Programmes' : 'Ramp Walk';
   if(SESS.role==='admin'){
     $('adminView').classList.remove('hidden'); $('aTitle').textContent = label+' – Results';
     $('topXWrap').classList.toggle('hidden', m!=='cult'); $('topX').value=''; $('full').checked=false;
-    RES=null; $('resOut').innerHTML=''; loadResults();
+    RES=null; $('resOut').innerHTML='<div class="loading">Loading results…</div>'; loadResults();
   } else {
     $('juryView').classList.remove('hidden'); $('jTitle').textContent = label+' – Marks Entry'; loadJury();
   }
@@ -157,24 +166,25 @@ function openMod(m){
 // ---------- JURY ----------
 let CFG=null, ITEMS=[], ST={}; const timers={};
 async function loadJury(){
-  const mode=MODE; $('rows').innerHTML=''; $('prog').textContent=''; show($('jmsg'),'Loading…',true);
+  const mode=MODE; $('jmsg').textContent=''; $('prog').textContent='';
+  $('rows').innerHTML='<div class="loading">Loading list… (first time can take 5–10 seconds)</div>';
   const r = await api({action:'config',mod:mode,token:token()});
-  if(checkExpired(r)) return; if(mode!==MODE) return;
-  if(!r.ok) return show($('jmsg'),r.error,false);
-  CFG=r; ST={}; $('jmsg').textContent='';
+  if(checkExpired(r) || mode!==MODE) return;
+  if(!r.ok){ $('rows').innerHTML=''; return show($('jmsg'),'⚠ '+r.error,false); }
+  CFG=r; ST={};
   $('closedNote').classList.toggle('hidden', r.open);
   ITEMS = mode==='ramp'
-    ? r.students.map(x=>({id:x.chest,title:x.chest,sub:'CHEST NO',name:x.name}))
-    : r.programmes.map(p=>({id:p.id,title:p.id,sub:'PROG NO',name:p.name,team:p.team}));
+    ? (r.students||[]).map(x=>({id:String(x.chest),title:x.chest,sub:'CHEST NO',name:x.name}))
+    : (r.programmes||[]).map(p=>({id:String(p.id),title:p.id,sub:'PROG NO',name:p.name,team:p.team}));
   $('jumpLbl').textContent = mode==='ramp' ? 'Go to Chest No:' : 'Go to Prog No:';
   let html='';
   ITEMS.forEach((it,k)=>{
     const m=r.my[it.id];
     ST[k]={ id:it.id, ver:0, gender: m && m.gender ? m.gender : '',
-            marks: r.criteria.map((c,i)=> m && m.marks[i]!=null ? m.marks[i] : null), saved: !!m };
+            marks: r.criteria.map((c,i)=> m && m.marks[i]!=null && !isNaN(m.marks[i]) ? m.marks[i] : null), saved: !!m };
     html += rowHtml(it,k);
   });
-  $('rows').innerHTML = html || '<div class="card">No items found in the Google Sheet.</div>';
+  $('rows').innerHTML = html || `<div class="card">No ${mode==='ramp'?'students found in Sheet1':'programmes found in the Programmes tab'} of the Google Sheet.</div>`;
   ITEMS.forEach((it,k)=>paint(k, ST[k].saved?'saved':''));
   updProg();
 }
@@ -182,7 +192,7 @@ function rowHtml(it,k){
   const crit = CFG.criteria.map((c,i)=>`<div class="crit"><div class="cname">${esc(c.name)} <span style="font-weight:400;color:#888">(/${c.max})</span></div>
     <div class="scale">${Array.from({length:c.max+1},(_,v)=>`<button class="sbtn" data-k="${k}" data-i="${i}" data-v="${v}">${v}</button>`).join('')}</div></div>`).join('');
   const mid = MODE==='ramp'
-    ? `<div class="pname"><b>${esc(it.name||'')}</b></div><div class="gender"><button class="gbtn" data-k="${k}" data-g="Boy">Boy</button><button class="gbtn" data-k="${k}" data-g="Girl">Girl</button></div>`
+    ? `<div class="pname"><b>${esc(it.name)}</b></div><div class="gender"><button class="gbtn" data-k="${k}" data-g="Boy">Boy</button><button class="gbtn" data-k="${k}" data-g="Girl">Girl</button></div>`
     : `<div class="pname"><b>${esc(it.name)}</b>${it.team?'<br><span>'+esc(it.team)+'</span>':''}</div>`;
   return `<div class="jrow" id="r${k}"><div class="chest"><small>${it.sub}</small>${esc(it.title)}</div>${mid}
     <div class="crits">${crit}</div><div class="status" id="s${k}"></div></div>`;
@@ -215,12 +225,10 @@ async function saveRow(k,s,mode,ver){
   const live = () => mode===MODE && ST[k]===s;
   const label = (mode==='ramp'?'Chest ':'Prog ')+s.id;
   if(live()) paint(k,'saving');
-  try{
-    const r = await api({action:'save',mod:mode,token:token(),key:s.id,gender:s.gender,marks:s.marks});
-    if(checkExpired(r)) return;
-    if(!r.ok){ if(live()){ paint(k,'error'); show($('jmsg'),label+': '+r.error,false); } }
-    else if(s.ver===ver){ s.saved=true; if(live()) paint(k,'saved'); }
-  }catch(e){ if(live()){ paint(k,'error'); show($('jmsg'),label+': connection error – tap any mark again to retry',false); } }
+  const r = await api({action:'save',mod:mode,token:token(),key:s.id,gender:s.gender,marks:s.marks});
+  if(checkExpired(r)) return;
+  if(!r.ok){ if(live()){ paint(k,'error'); show($('jmsg'),label+': '+r.error+' – tap any mark again to retry',false); } }
+  else if(s.ver===ver){ s.saved=true; if(live()) paint(k,'saved'); }
   if(live()) updProg();
 }
 function updProg(){ const n=Object.values(ST).filter(s=>s.saved).length; $('prog').textContent=`Saved: ${n} / ${ITEMS.length}`; }
@@ -236,8 +244,8 @@ async function loadResults(){
   const p={action:'results',mod:mode,token:token()};
   if(mode==='cult' && $('topX').value) p.topX=Number($('topX').value);
   const r = await api(p);
-  if(checkExpired(r)) return; if(mode!==MODE) return;
-  if(!r.ok) return show($('amsg'),r.error,false);
+  if(checkExpired(r) || mode!==MODE) return;
+  if(!r.ok){ $('resOut').innerHTML=''; return show($('amsg'),'⚠ '+r.error,false); }
   RES=r; if(mode==='cult') $('topX').value=r.topX;
   show($('amsg'),'Updated '+new Date().toLocaleTimeString('en-GB'),true);
   render();
@@ -255,19 +263,18 @@ function renderRamp(){
     const title = full ? `Full Ranking – ${label}` :
       (g.clash ? `Top ${g.shown} ${label} <span style="font-size:13px;color:#b26a00">(marks tie in top ${r.topN} – extended list)</span>` : `Top ${g.shown} ${label}`);
     if(!list.length) return `<div class="sec ${cls}"><h3>${title}</h3><p>No scores yet.</p></div>`;
-    const rows = list.map(x=>`<tr class="${x.tied?'tie':''}"><td><b>${x.rank}</b></td><td><b>${x.chest}</b></td><td style="text-align:left">${esc(x.name||'')}</td>
+    const rows = list.map(x=>`<tr class="${x.tied?'tie':''}"><td><b>${x.rank}</b></td><td><b>${esc(x.chest)}</b></td><td style="text-align:left">${esc(x.name)}</td>
       ${x.crit.map(v=>`<td>${v}</td>`).join('')}<td><b>${x.total}</b></td><td>${x.jc}/${r.juryCount}</td></tr>`).join('');
     return `<div class="sec ${cls}"><h3>${title}</h3><table><tr><th>Rank</th><th>Chest No</th><th>Student Name</th>
       ${r.criteria.map(c=>`<th>${esc(c)}</th>`).join('')}<th>Grand Total</th><th>Jury</th></tr>${rows}</table></div>`;
   };
   let warn='';
-  if(r.mismatch.length) warn+=`<div class="warn">⚠ Boy/Girl selection differs between jury members for Chest No: <b>${r.mismatch.join(', ')}</b> – majority selection used.</div>`;
-  if(r.unclear.length) warn+=`<div class="warn">⚠ Boy/Girl could not be decided (equal votes) for Chest No: <b>${r.unclear.join(', ')}</b> – excluded from lists.</div>`;
-  if(r.incomplete.length) warn+=`<div class="warn">⚠ Not yet scored by all ${r.juryCount} jury members: Chest No <b>${r.incomplete.join(', ')}</b></div>`;
+  if(r.mismatch.length) warn+=`<div class="warn">⚠ Boy/Girl selection differs between jury members for Chest No: <b>${r.mismatch.map(esc).join(', ')}</b> – majority selection used.</div>`;
+  if(r.unclear.length) warn+=`<div class="warn">⚠ Boy/Girl could not be decided (equal votes) for Chest No: <b>${r.unclear.map(esc).join(', ')}</b> – excluded from lists.</div>`;
+  if(r.incomplete.length) warn+=`<div class="warn">⚠ Not yet scored by all ${r.juryCount} jury members: Chest No <b>${r.incomplete.map(esc).join(', ')}</b></div>`;
   $('resOut').innerHTML = heading('Ramp Walk Results', r.juryProgress.map(j=>`${esc(j.jury)}: <b>${j.count}/${r.chestCount}</b>`).join(' &nbsp;|&nbsp; '))
     + warn + `<div class="grid2">${sec('Girls','girls',r.girls)}${sec('Boys','boys',r.boys)}</div>` + footer();
 }
-
 function renderCult(){
   const r=RES, full=$('full').checked, list = full ? r.all : r.selected;
   let warn='';
@@ -276,7 +283,7 @@ function renderCult(){
   const extra = (!full && r.selected.length > r.topX) ? ` <span style="font-size:13px;color:#b26a00">(${r.selected.length} shown – marks tie at position ${r.topX})</span>` : '';
   const title = full ? 'Full Ranking – Cultural Programmes' : `Top ${r.topX} Programmes${extra}`;
   const rows = list.map(x=>`<tr class="${x.tied?'tie':''}"><td><b>${x.rank}</b></td><td>${esc(x.key)}</td>
-    <td style="text-align:left"><b>${esc(x.name)}</b></td><td>${esc(x.team||'')}</td>
+    <td style="text-align:left"><b>${esc(x.name)}</b></td><td>${esc(x.team)}</td>
     ${x.crit.map(v=>`<td>${v}</td>`).join('')}<td><b>${x.total}</b></td><td>${x.jc}/${r.juryCount}</td></tr>`).join('');
   const table = list.length ? `<table><tr><th>Rank</th><th>Prog No</th><th>Programme</th><th>Team / Class</th>
     ${r.criteria.map(c=>`<th>${esc(c)}</th>`).join('')}<th>Grand Total</th><th>Jury</th></tr>${rows}</table>` : '<p>No scores yet.</p>';
