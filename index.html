@@ -164,7 +164,7 @@ async function loadJury(){
   CFG=r; ST={}; $('jmsg').textContent='';
   $('closedNote').classList.toggle('hidden', r.open);
   ITEMS = mode==='ramp'
-    ? Array.from({length:r.chestCount},(_,i)=>({id:String(i+1),title:i+1,sub:'CHEST NO'}))
+    ? r.students.map(x=>({id:x.chest,title:x.chest,sub:'CHEST NO',name:x.name}))
     : r.programmes.map(p=>({id:p.id,title:p.id,sub:'PROG NO',name:p.name,team:p.team}));
   $('jumpLbl').textContent = mode==='ramp' ? 'Go to Chest No:' : 'Go to Prog No:';
   let html='';
@@ -182,7 +182,7 @@ function rowHtml(it,k){
   const crit = CFG.criteria.map((c,i)=>`<div class="crit"><div class="cname">${esc(c.name)} <span style="font-weight:400;color:#888">(/${c.max})</span></div>
     <div class="scale">${Array.from({length:c.max+1},(_,v)=>`<button class="sbtn" data-k="${k}" data-i="${i}" data-v="${v}">${v}</button>`).join('')}</div></div>`).join('');
   const mid = MODE==='ramp'
-    ? `<div class="gender"><button class="gbtn" data-k="${k}" data-g="Boy">Boy</button><button class="gbtn" data-k="${k}" data-g="Girl">Girl</button></div>`
+    ? `<div class="pname"><b>${esc(it.name||'')}</b></div><div class="gender"><button class="gbtn" data-k="${k}" data-g="Boy">Boy</button><button class="gbtn" data-k="${k}" data-g="Girl">Girl</button></div>`
     : `<div class="pname"><b>${esc(it.name)}</b>${it.team?'<br><span>'+esc(it.team)+'</span>':''}</div>`;
   return `<div class="jrow" id="r${k}"><div class="chest"><small>${it.sub}</small>${esc(it.title)}</div>${mid}
     <div class="crits">${crit}</div><div class="status" id="s${k}"></div></div>`;
@@ -255,9 +255,9 @@ function renderRamp(){
     const title = full ? `Full Ranking – ${label}` :
       (g.clash ? `Top ${g.shown} ${label} <span style="font-size:13px;color:#b26a00">(marks tie in top ${r.topN} – extended list)</span>` : `Top ${g.shown} ${label}`);
     if(!list.length) return `<div class="sec ${cls}"><h3>${title}</h3><p>No scores yet.</p></div>`;
-    const rows = list.map(x=>`<tr class="${x.tied?'tie':''}"><td><b>${x.rank}</b></td><td><b>${x.chest}</b></td>
+    const rows = list.map(x=>`<tr class="${x.tied?'tie':''}"><td><b>${x.rank}</b></td><td><b>${x.chest}</b></td><td style="text-align:left">${esc(x.name||'')}</td>
       ${x.crit.map(v=>`<td>${v}</td>`).join('')}<td><b>${x.total}</b></td><td>${x.jc}/${r.juryCount}</td></tr>`).join('');
-    return `<div class="sec ${cls}"><h3>${title}</h3><table><tr><th>Rank</th><th>Chest No</th>
+    return `<div class="sec ${cls}"><h3>${title}</h3><table><tr><th>Rank</th><th>Chest No</th><th>Student Name</th>
       ${r.criteria.map(c=>`<th>${esc(c)}</th>`).join('')}<th>Grand Total</th><th>Jury</th></tr>${rows}</table></div>`;
   };
   let warn='';
