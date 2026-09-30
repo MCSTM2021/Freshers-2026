@@ -101,14 +101,19 @@
 const API_URL = 'https://script.google.com/macros/s/AKfycbzeEcNDQ9_m27AQemruDhncO_KV_BHjfvbqz-2z2TpwhRYI76-30_lGf6fBPjOFYXzpwQ/exec';
 const NEED_VERSION = 'v4', SKEY = 'fp_v4';
 
-async function api(p){
-  const ctl = new AbortController(), t = setTimeout(()=>ctl.abort(), 30000);
-  try{
-    const r = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p),signal:ctl.signal});
-    const txt = await r.text();
-    try{ return JSON.parse(txt); }catch(e){ return {ok:false,error:'Server did not reply correctly. Check the Apps Script deployment (Who has access: Anyone).'}; }
-  }catch(e){ return {ok:false,error: e.name==='AbortError' ? 'Server took too long. Please try again.' : 'Connection error: '+e.message}; }
-  finally{ clearTimeout(t); }
+async function api(p, tries){
+  tries = tries || 2;
+  for (let n = 1; n <= tries; n++){
+    const ctl = new AbortController(), t = setTimeout(()=>ctl.abort(), 60000);
+    try{
+      const r = await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(p),signal:ctl.signal});
+      const txt = await r.text(); clearTimeout(t);
+      try{ return JSON.parse(txt); }catch(e){ return {ok:false,error:'Server did not reply correctly. Check deployment: Execute as Me, Who has access: Anyone.'}; }
+    }catch(e){
+      clearTimeout(t);
+      if (n === tries) return {ok:false,error: e.name==='AbortError' ? 'Server took too long (tried '+tries+' times). Check the internet connection and try again.' : 'Connection error: '+e.message};
+    }
+  }
 }
 const $ = id => document.getElementById(id);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
