@@ -116,6 +116,7 @@ async function api(p, tries){
   }
 }
 const $ = id => document.getElementById(id);
+const $ = id => document.getElementById(id);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function show(el,txt,ok){ el.textContent=txt; el.className='msg '+(ok?'ok':'err'); }
 function token(){ return (JSON.parse(sessionStorage.getItem(SKEY)||'{}')).token; }
