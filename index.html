@@ -56,7 +56,7 @@
 </style>
 </head>
 <body>
-<header><h1>Freshers' Party 2026 – Evaluation</h1>
+<header><h1>Freshers' Party 2026 – Evaluation <small style="font-size:11px;opacity:.7">v6</small></h1>
   <div class="who hidden" id="who"><span id="whoName"></span><br><button class="btn light" style="margin:4px 0 0;padding:5px 12px" onclick="logout()">Logout</button></div></header>
 
 <div class="card" id="loginCard" style="max-width:400px">
@@ -99,32 +99,30 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbzeEcNDQ9_m27AQemruDhncO_KV_BHjfvbqz-2z2TpwhRYI76-30_lGf6fBPjOFYXzpwQ/exec';
-const NEED_VERSION = 'v5', SKEY = 'fp_v4';
+const NEED_VERSION = 'v6', SKEY = 'fp_v4';
 
-window.onerror = function(m, s, l){ var el = document.getElementById('lmsg') || document.getElementById('jmsg');
+window.onerror = function(m, s, l){ var el = document.getElementById('lmsg');
   if (el){ el.textContent = 'Page error: ' + m + ' (line ' + l + ')'; el.className = 'msg err'; } };
-function timed_(url, opt, ms){
-  return new Promise(function(resolve, reject){
-    var ctl = null; try { ctl = new AbortController(); opt.signal = ctl.signal; } catch(e) {}
-    var t = setTimeout(function(){ if (ctl) ctl.abort(); reject(new Error('timeout')); }, ms);
-    fetch(url, opt).then(function(r){ return r.text(); })
-      .then(function(txt){ clearTimeout(t); resolve(txt); }, function(err){ clearTimeout(t); reject(err); });
+var CB_N = 0;
+function jsonp_(body, ms){
+  return new Promise(function(resolve){
+    var name = 'fpcb' + Date.now() + (CB_N++), s = document.createElement('script'), done = false, t;
+    function end(v){ if (done) return; done = true; clearTimeout(t);
+      try { delete window[name]; } catch(e){ window[name] = undefined; }
+      if (s.parentNode) s.parentNode.removeChild(s); resolve(v); }
+    window[name] = function(d){ end(d); };
+    s.onerror = function(){ end({ok:false, error:'Could not reach the server – check internet / try mobile data.'}); };
+    t = setTimeout(function(){ end({ok:false, error:'Server took too long – please try again.'}); }, ms);
+    s.src = API_URL + '?callback=' + name + '&q=' + encodeURIComponent(body) + '&t=' + Date.now();
+    document.body.appendChild(s);
   });
 }
 async function api(p){
-  var body = JSON.stringify(p), last = '';
-  var ways = [
-    function(){ return timed_(API_URL, {method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:body}, 40000); },
-    function(){ return timed_(API_URL + '?q=' + encodeURIComponent(body) + '&t=' + Date.now(), {method:'GET'}, 40000); }
-  ];
-  for (var i = 0; i < ways.length; i++){
-    try { var txt = await ways[i]();
-      try { return JSON.parse(txt); } catch(e){ last = 'Server did not reply correctly (Deployment must be: Execute as Me, Access: Anyone).'; }
-    } catch(e){ last = e.message === 'timeout' ? 'Server took too long – check the phone’s internet connection.' : 'Connection error: ' + e.message; }
-  }
-  return {ok:false, error:last};
+  var body = JSON.stringify(p), r = await jsonp_(body, 30000);
+  if (!r.ok && /took too long|reach the server/.test(r.error || '')) r = await jsonp_(body, 30000);
+  return r;
 }
-const $ = id => document.getElementById(id);
+ const $ = id => document.getElementById(id);
 const $ = id => document.getElementById(id);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function show(el,txt,ok){ el.textContent=txt; el.className='msg '+(ok?'ok':'err'); }
