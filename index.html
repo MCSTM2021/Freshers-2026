@@ -303,7 +303,6 @@ function renderCult(){
   $('resOut').innerHTML = heading('Cultural Programme Results', r.juryProgress.map(j=>`${esc(j.jury)}: <b>${j.count}/${r.progCount}</b>`).join(' &nbsp;|&nbsp; '))
     + warn + `<div class="sec" style="margin-top:14px"><h3>${title}</h3>${table}</div>` + footer();
 }
-
 if(!startApp()) loadUsers();
 </script>
 </body>
