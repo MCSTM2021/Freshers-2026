@@ -117,9 +117,21 @@ function jsonp_(body, ms){
     document.body.appendChild(s);
   });
 }
+async function viaFetch_(body, ms){
+  var ctl = null; try { ctl = new AbortController(); } catch(e) {}
+  var t = setTimeout(function(){ if (ctl) ctl.abort(); }, ms);
+  try {
+    var r = await fetch(API_URL, { method:'POST', credentials:'omit', redirect:'follow',
+      headers:{'Content-Type':'text/plain;charset=utf-8'}, body:body, signal: ctl ? ctl.signal : undefined });
+    var txt = await r.text();
+    try { return JSON.parse(txt); }
+    catch(e){ return {ok:false, error:'Server sent an error page - check Apps Script > Executions.'}; }
+  } catch(e){ return {ok:false, error:'Could not reach the server - check internet / try mobile data.'}; }
+  finally { clearTimeout(t); }
+}
 async function api(p){
-  var body = JSON.stringify(p), r = await jsonp_(body, 30000);
-  if (!r.ok && /took too long|reach the server/.test(r.error || '')) r = await jsonp_(body, 30000);
+  var body = JSON.stringify(p), r = await jsonp_(body, 25000);
+  if (!r.ok && /took too long|reach the server/.test(r.error || '')) r = await viaFetch_(body, 30000);
   return r;
 }
 const $ = id => document.getElementById(id);
