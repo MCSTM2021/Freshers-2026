@@ -61,7 +61,7 @@
 
 <div class="card" id="loginCard" style="max-width:400px">
   <h2>Login</h2>
-  <label>User Name</label><select id="lu"><option value="">Loading users… (can take up to 10 s)</option></select>
+  <label>User Name</label><select id="lu"><option value="">Loading users…</option></select>
   <label>Password</label><input id="lp" type="password" onkeydown="if(event.key==='Enter')login()">
   <button class="btn" onclick="login()">Login</button><div class="msg" id="lmsg"></div>
 </div>
@@ -99,7 +99,7 @@
 
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycbzeEcNDQ9_m27AQemruDhncO_KV_BHjfvbqz-2z2TpwhRYI76-30_lGf6fBPjOFYXzpwQ/exec';
-const NEED_VERSION = 'v7', SKEY = 'fp_v4';
+const NEED_VERSION = 'v7', SKEY = 'fp_v7';
 
 window.onerror = function(m, s, l){ var el = document.getElementById('lmsg');
   if (el){ el.textContent = 'Page error: ' + m + ' (line ' + l + ')'; el.className = 'msg err'; } };
@@ -111,8 +111,8 @@ function jsonp_(body, ms){
       try { delete window[name]; } catch(e){ window[name] = undefined; }
       if (s.parentNode) s.parentNode.removeChild(s); resolve(v); }
     window[name] = function(d){ end(d); };
-    s.onerror = function(){ end({ok:false, error:'Could not reach the server – check internet / try mobile data.'}); };
-    t = setTimeout(function(){ end({ok:false, error:'Server took too long – please try again.'}); }, ms);
+    s.onerror = function(){ end({ok:false, error:'Could not reach the server - check internet / try mobile data.'}); };
+    t = setTimeout(function(){ end({ok:false, error:'Server took too long - please try again.'}); }, ms);
     s.src = API_URL + '?callback=' + name + '&q=' + encodeURIComponent(body) + '&t=' + Date.now();
     document.body.appendChild(s);
   });
@@ -122,7 +122,6 @@ async function api(p){
   if (!r.ok && /took too long|reach the server/.test(r.error || '')) r = await jsonp_(body, 30000);
   return r;
 }
- const $ = id => document.getElementById(id);
 const $ = id => document.getElementById(id);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function show(el,txt,ok){ el.textContent=txt; el.className='msg '+(ok?'ok':'err'); }
@@ -130,11 +129,11 @@ function token(){ return (JSON.parse(sessionStorage.getItem(SKEY)||'{}')).token;
 function checkExpired(r){ if(!r.ok && /expired/i.test(r.error||'')){ alert(r.error); logout(); return true; } return false; }
 
 // ---------- LOGIN / HOME ----------
-let SESS=null, MODE=null;
+let SESS=null, MODE=null, RES=null, timer=null;
 async function loadUsers(){
   const r = await api({action:'users'});
   if(!r.ok){ $('lu').innerHTML='<option value="">Could not load users</option>'; return show($('lmsg'),r.error,false); }
-  if(r.version!==NEED_VERSION) show($('lmsg'),'Server script is an old version – in Apps Script do Deploy → Manage deployments → New version.',false);
+  if(r.version!==NEED_VERSION) show($('lmsg'),'Server script is version '+r.version+', page expects '+NEED_VERSION+'. Deploy a New version.',false);
   $('lu').innerHTML = '<option value="">-- Select User --</option>' + r.users.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join('');
 }
 async function login(){
@@ -142,13 +141,13 @@ async function login(){
   show($('lmsg'),'Checking…',true);
   const r = await api({action:'login',username:$('lu').value,password:$('lp').value});
   if(!r.ok) return show($('lmsg'),r.error,false);
-  if(!r.user || !Array.isArray(r.access)) return show($('lmsg'),'Server script is an old version – please deploy a New version.',false);
+  if(!r.user || !Array.isArray(r.access)) return show($('lmsg'),'Server script is an old version - please deploy a New version.',false);
   sessionStorage.setItem(SKEY,JSON.stringify(r)); $('lp').value=''; startApp();
 }
-async function logout(){ const t=token(); sessionStorage.clear(); if(t) api({action:'logout',token:t}); location.reload(); }
+function logout(){ const t=token(); sessionStorage.clear(); if(t) api({action:'logout',token:t}); setTimeout(()=>location.reload(),300); }
 function startApp(){
   try{ SESS = JSON.parse(sessionStorage.getItem(SKEY)||'null'); }catch(e){ SESS=null; }
-  if(!SESS || !SESS.user || !Array.isArray(SESS.access)){ sessionStorage.clear(); SESS=null; return false; }
+  if(!SESS || !SESS.user || !Array.isArray(SESS.access)){ SESS=null; return false; }
   $('loginCard').classList.add('hidden'); $('who').classList.remove('hidden');
   $('whoName').textContent = `${SESS.user} (${SESS.role})`;
   goHome(); return true;
@@ -251,7 +250,6 @@ function jumpTo(){
 }
 
 // ---------- ADMIN ----------
-let RES=null, timer=null;
 async function loadResults(){
   const mode=MODE; if(!mode) return; show($('amsg'),'Loading…',true);
   const p={action:'results',mod:mode,token:token()};
@@ -268,7 +266,6 @@ const heading = (sub, prog) => `<div class="rep-head" style="margin-top:14px"><h
   <h3>Freshers' Party 2026 – ${sub}</h3><div style="font-size:13px">Jury progress: ${prog}</div></div>`;
 const footer = () => `<p style="font-size:12px;margin-top:10px">Highlighted rows have equal grand totals. Generated on ${new Date().toLocaleString('en-GB')}</p>`;
 function render(){ if(!RES) return; MODE==='cult' ? renderCult() : renderRamp(); }
-
 function renderRamp(){
   const r=RES, full=$('full').checked;
   const sec = (label,cls,g)=>{
@@ -303,6 +300,7 @@ function renderCult(){
   $('resOut').innerHTML = heading('Cultural Programme Results', r.juryProgress.map(j=>`${esc(j.jury)}: <b>${j.count}/${r.progCount}</b>`).join(' &nbsp;|&nbsp; '))
     + warn + `<div class="sec" style="margin-top:14px"><h3>${title}</h3>${table}</div>` + footer();
 }
+
 if(!startApp()) loadUsers();
 </script>
 </body>
